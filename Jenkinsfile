@@ -7,6 +7,10 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '20'))
   }
 
+  triggers {
+    cron('H 4 * * *')
+  }
+
   environment {
     HOST_USER = credentials('TEAMSPEAK6_HOST_USER')
   }
@@ -14,7 +18,8 @@ pipeline {
   stages {
     stage('Deploy') {
       steps {
-        sh 'docker compose -f docker-compose-teamspeak6-server.yml up --build -d --remove-orphans'
+        sh 'docker compose -f docker-compose-teamspeak6-server.yml pull'
+        sh 'docker compose -f docker-compose-teamspeak6-server.yml up -d --force-recreate'
       }
     }
   }
